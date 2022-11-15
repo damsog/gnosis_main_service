@@ -1,6 +1,6 @@
 import morgan from 'morgan';
 import chalk from 'chalk';
-import colorText from './colortext';
+import colorText from '../lib/colortext';
 
 
 const customMorgan = morgan((tokens:any,req:any,res:any) => {
