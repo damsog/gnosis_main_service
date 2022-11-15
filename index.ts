@@ -20,14 +20,14 @@ import https from 'https';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
+import authenticator from './middlewares/authenticator';
 
 // Style & Color
 import logger from './lib/logger';
-import customMorgan from './lib/customMorgan';
+import customMorgan from './middlewares/customMorgan';
 import colorText from './lib/colortext';
 //import gradient from 'gradient';
 import figlet from 'figlet';
-
 
 /************************************************************************************************
  *                                           Configurations
@@ -40,7 +40,7 @@ const swaggerOptions = {
         info: {
             title: 'Platform API',
             version: "1.0.0",
-            description: 'Videoanalytics platform API'
+            description: 'Gnosis platform API'
         },
         servers: [
             {
@@ -59,7 +59,7 @@ const swaggerOptions = {
         },
         security: [ { bearerAuth: [] } ],
     },
-    apis: ["./routes/*.js"],
+    apis: ["./controllers/*.ts", "./dataModels/*.ts"],
 }
 // Swagger Documentation initialization
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -99,7 +99,9 @@ app.use(customMorgan);
 app.use(express.urlencoded({extended: false}));
 app.use(express.json({limit: '50mb'}));
 
-
+// API
+app.use('/api/auth', require('./controllers/authenticationController'));
+app.use('/api/user', authenticator, require('./controllers/userController'));
 
 const options = {
     key: fs.readFileSync(process.env.SSL_KEY!),
