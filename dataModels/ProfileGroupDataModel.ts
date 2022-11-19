@@ -3,13 +3,13 @@ import express from 'express';
 const router = express.Router();
 
 /**************************************************|ProfileGroup Data Models|**********************************************/
-export interface ProfileBaseDM {
-    profileId: String;
-    groupId: String;
+export interface ProfileGroupBaseDM {
+    profileId: string;
+    groupId: string;
 }
 
-export interface ProfileDM extends ProfileBaseDM {
-    id: String;
+export interface ProfileGroupDM extends ProfileGroupBaseDM {
+    id: string;
     createdAt: Date;
     updatedAt: Date;
 }

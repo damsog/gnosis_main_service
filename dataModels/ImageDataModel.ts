@@ -3,14 +3,14 @@ const router = express.Router();
 
 /**************************************************|Image Data Models|**********************************************/
 export interface ImageBaseDM {
-    imageFile: String;
-    coder: String;
-    isCoded: Boolean;
-    profileId: String
+    imageFile: string;
+    coder: string;
+    isCoded: boolean;
+    profileId: string
 }
 
 export interface ImageDM extends ImageBaseDM {
-    id: String;
+    id: string;
     createdAt: Date;
     updatedAt: Date;
 }

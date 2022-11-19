@@ -3,15 +3,15 @@ const router = express.Router();
 
 /**************************************************|Group Data Models|**********************************************/
 export interface GroupBaseDM {
-    name: String;
-    description: String;
-    dataset: String;
-    allImagesCoded: Boolean;
-    userId: String;
+    name: string;
+    description: string;
+    dataset: string;
+    allImagesCoded: boolean;
+    userId: string;
 }
 
 export interface GroupDM extends GroupBaseDM {
-    id: String;
+    id: string;
     createdAt: Date;
     updatedAt: Date;
 }

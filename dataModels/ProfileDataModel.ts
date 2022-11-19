@@ -3,9 +3,9 @@ const router = express.Router();
 
 /**************************************************|Profile Data Models|**********************************************/
 export interface ProfileBaseDM {
-    name: String;
-    bio: String;
-    userId: String;
+    name: string;
+    bio: string;
+    userId: string;
 
 }
 
