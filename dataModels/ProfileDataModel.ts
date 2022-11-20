@@ -61,7 +61,7 @@ export interface ProfileDM extends ProfileBaseDM {
  *                  type: string
  *                  description: bio of the profile
  *              userId: 
- *                 type: integer
+ *                 type: string
  *                 description: id of the user
 */
 
@@ -79,7 +79,7 @@ export interface ProfileDM extends ProfileBaseDM {
  *                  type: string
  *                  description: bio of the profile
  *              userId: 
- *                 type: integer
+ *                 type: string
  *                 description: id of the user
 */
 
