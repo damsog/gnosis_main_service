@@ -3,7 +3,8 @@ const router = express.Router();
 
 /**************************************************|Image Data Models|**********************************************/
 export interface ImageBaseDM {
-    imageFile: string;
+    name: string;
+    path: string;
     coder: string;
     isCoded: boolean;
     profileId: string
@@ -27,7 +28,10 @@ export interface ImageDM extends ImageBaseDM {
  *              id:
  *                  type: int
  *                  description: The auto-generated id of the coder
- *              imageFile:
+ *              name:
+ *                  type: string
+ *                  description: Route of the refference img
+ *              path:
  *                  type: string
  *                  description: Route of the refference img
  *              coder:
@@ -56,17 +60,11 @@ export interface ImageDM extends ImageBaseDM {
  *          required:
  *              - imageFile
  *          properties:
- *              imageFile:
+ *              name:
  *                  type: string
  *                  description: Route of the refference img
- *              coder:
- *                  type: string
- *                  description: coder generated for the image
- *              isCoded:
- *                  type: boolean
- *                  description: if the image is coded or not
  *              profileId:
- *                  type: int
+ *                  type: string
  *                  description: id of the parent profile 
 */
 
@@ -77,17 +75,11 @@ export interface ImageDM extends ImageBaseDM {
  *      imageToUpdate:
  *          type: object
  *          properties:
- *              imageFile:
+ *              name:
  *                  type: string
  *                  description: Route of the refference img
- *              coder:
- *                  type: string
- *                  description: coder generated for the image
- *              isCoded:
- *                  type: boolean
- *                  description: if the image is coded or not
  *              profileId:
- *                  type: int
+ *                  type: string
  *                  description: id of the parent profile 
 */
 

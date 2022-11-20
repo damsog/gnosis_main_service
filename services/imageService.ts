@@ -28,6 +28,18 @@ export class ImageService {
         return images;
     }
 
+    static async getByUserId(id: string): Promise<Image[]> {
+        const images = await prisma.image.findMany({
+            where: {
+                profile: {
+                    userId: id
+                }
+            }
+        });
+
+        return images;
+    }
+
     static async create(image: ImageBaseDM): Promise<Image> {
         const imageCreated = await prisma.image.create({
             data: {
