@@ -39,8 +39,9 @@ model Profile {
 
 model Image {
   id        String   @id @default(cuid())
-  imageFile String
-  coder     String   @db.Text
+  name      String
+  path      String
+  coder     String?  @db.Text
   isCoded   Boolean  @default(false)
   profile   Profile  @relation(fields: [profileId], references: [id])
   profileId String
