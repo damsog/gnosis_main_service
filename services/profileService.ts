@@ -19,6 +19,16 @@ export class ProfileService {
         return profile;
     }
 
+    static async getByUserId(userId: string): Promise<Profile[]> {
+        const profiles = await prisma.profile.findMany({
+            where: {
+                userId: userId
+            }
+        });
+
+        return profiles;
+    }
+
     static async getByName(name: string): Promise<Profile | null> {
         const profile = await prisma.profile.findFirst({
             where: {

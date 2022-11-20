@@ -68,6 +68,46 @@ router.get('/:id', async (req, res) => {
 
 /**
  * @swagger
+ * /api/profile/user/{userId}:
+ *  get:
+ *      summary: Return all profiles for a user
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Profiles]
+ *      parameters:
+ *          -   in: path
+ *              name: userId
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: user id
+ *      responses:
+ *          200:
+ *              description: list of all profiles for a user
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/profile'
+ *                                
+ */
+
+router.get('/user/:userId', async (req, res) => {
+    try{
+        const { userId } = req.params;
+        const profiles = await ProfileService.getByUserId(userId);
+        if(profiles) return res.status(200).json(profiles);
+
+        return res.status(204).json();
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
+    }
+});
+
+/**
+ * @swagger
  * /api/profile:
  *  post:
  *      summary: Create a new profile associating it with a user
