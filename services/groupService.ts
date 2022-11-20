@@ -18,6 +18,26 @@ export class GroupService {
         return group;
     }
 
+    static async getByName(name: string): Promise<Group | null> {
+        const group = await prisma.group.findFirst({
+            where: {
+                name: name
+            }
+        });
+
+        return group;
+    }
+
+    static async getByUserId(userId: string): Promise<Group[]> {
+        const groups = await prisma.group.findMany({
+            where: {
+                userId: userId
+            }
+        });
+
+        return groups;
+    }
+
     static async create(group: GroupBaseDM): Promise<Group> {
         const groupCreated = await prisma.group.create({
             data: {

@@ -27,7 +27,7 @@ export interface GroupDM extends GroupBaseDM {
  *              - dataset
  *          properties:
  *              id:
- *                  type: int
+ *                  type: string
  *                  description: The auto-generated id of the user
  *              name:
  *                  type: string
@@ -71,7 +71,7 @@ export interface GroupDM extends GroupBaseDM {
  *                  type: string
  *                  description: route where the dataset resides
  *              userId:
- *                  type: int
+ *                  type: string
  *                  description: id of the parent user
 */
 
@@ -92,7 +92,7 @@ export interface GroupDM extends GroupBaseDM {
  *                  type: string
  *                  description: route where the dataset resides
  *              userId:
- *                  type: int
+ *                  type: string
  *                  description: id of the parent user
 */
 
