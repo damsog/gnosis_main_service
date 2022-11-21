@@ -105,6 +105,7 @@ app.use('/api/user', authenticator, require('./controllers/userController'));
 app.use('/api/profile', authenticator, require('./controllers/profileController'));
 app.use('/api/group', authenticator, require('./controllers/groupController'));
 app.use('/api/image', authenticator, require('./controllers/imageController'));
+app.use('/api/profile-group', authenticator, require('./controllers/profileGroupController'));
 
 const options = {
     key: fs.readFileSync(process.env.SSL_KEY!),
