@@ -1,6 +1,10 @@
 import prisma from '../configurations/dbinit';
 import { Image } from '@prisma/client';
 import { ImageBaseDM, ImageDM } from '../dataModels/ImageDataModel';
+import SftpService from './sftpService';
+import logger from '../lib/logger';
+import path from 'path';
+import fs from 'fs';
 
 export class ImageService {
     static async getAll(): Promise<Image[]> {
@@ -40,13 +44,25 @@ export class ImageService {
         return images;
     }
 
-    static async create(image: ImageBaseDM): Promise<Image> {
+    static async create(image: ImageBaseDM, sftpClient: any): Promise<Image> {
+        const publicFolder = path.join(__dirname, "../tmp/");
+
         const imageCreated = await prisma.image.create({
             data: {
                 ...image
             }
         });
+        
+        const sftpService = new SftpService(sftpClient);
 
+        await sftpService.mkdirIfNotExist(`/files/${imageCreated.profileId}/`);
+        logger.debug(`mkdirIfNotExist: /files/${imageCreated.profileId}/`);
+        
+        await sftpService.upload(`${publicFolder}${imageCreated.name}`, `/files/${imageCreated.path}`);
+        logger.debug(`upload: ${publicFolder}${imageCreated.name} to /files/${imageCreated.path}`);
+
+        // if Success deletes the temp file
+        await fs.unlinkSync(`${publicFolder}${imageCreated.name}`);   
         return imageCreated;
     }
     
