@@ -4,10 +4,10 @@ import logger from '../lib/logger';
 const sftp = new Client();
 (async () => {
     await sftp.connect({
-        host: '192.168.1.1',
-        port: 2222,
-        username: 'admin',
-        password: '1111'
+        host: process.env.SFTP_HOST,
+        port: Number(process.env.SFTP_PORT),
+        username: process.env.SFTP_USER,
+        password: process.env.SFTP_PASSWORD
     });
 })();
 
