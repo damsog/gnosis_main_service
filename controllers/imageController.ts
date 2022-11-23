@@ -1,6 +1,14 @@
-import express from 'express';
+import express, { Request } from 'express';
 import { ImageService } from '../services/imageService';
 const router = express.Router();
+import Formidable, { Fields, Files } from 'formidable';
+import path from 'path';
+import logger from '../lib/logger';
+import { ImageBaseDM } from '../dataModels/ImageDataModel';
+import sftp from '../configurations/sftpinit';
+import sftpService from '../services/sftpService';
+import SftpService from '../services/sftpService';
+import { FieldRef } from '@prisma/client/runtime';
 
 /**
  * @swagger
@@ -148,12 +156,28 @@ router.get('/user/:userId', async (req, res) => {
  *      security:
  *          - bearerAuth: []
  *      tags: [Images]
+ *      parameters:
+ *          -   in: query
+ *              name: name
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: Name of the image
+ *          -   in: query
+ *              name: profileId
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: Profile id
  *      requestBody:
- *          required: true
- *          content: 
- *              application/json:
+ *          content:
+ *              multipart/form-data:
  *                  schema:
- *                      $ref: '#/components/schemas/imageToCreate'
+ *                      type: object
+ *                      properties:
+ *                          profilePicture:
+ *                              type: string
+ *                              format: binary
  *      responses:
  *          200:
  *              description: Image just created
@@ -165,18 +189,71 @@ router.get('/user/:userId', async (req, res) => {
  *                              $ref: '#/components/schemas/image'
  *                                
  */
-router.post('/', async (req, res) => {
-    const { body } = req;
+interface ImageQueryParams {
+    name: string;
+    profileId: string;
+}
+router.post('/', async (req: Request<{}, any, any, ImageQueryParams>, res) => {
+    const { name, profileId } = req.query;
+    logger.debug(JSON.stringify(req.body));
+    if(req.body === undefined) return res.status(400).json({ message: 'No image provided' });
+    
     try{
-        if(
-            "name" in body && typeof body.name === "string" &&
-            "profileId" in body && typeof body.profileId === "string"
-        ){
-            const image = await ImageService.create(body);
-            return res.status(201).json(image);
+        const imageData: ImageBaseDM = {
+            name: name,
+            path: '',
+            coder: '',
+            isCoded: false,
+            profileId: profileId
         }
-        return res.status(400).json();
+
+
+        const publicFolder = path.join(__dirname, "../tmp/");
+        let form = new Formidable.IncomingForm();
+        
+        const fileData = await new Promise<string>(
+            async (resolve, reject) => {
+                
+                try{
+                    var fileName: string | null = '';
+                    form.parse(req);
+
+                    form.on('fileBegin', (name, file) => {
+                        fileName = `${name}${path.extname(file.originalFilename!)}`;
+                        logger.debug(`Read data, filename ${fileName}`);
+                        file.filepath = `${publicFolder}${name}${path.extname(file.originalFilename!)}`;
+                    });
+
+                    form.on('file', async (name, file) => {
+                        logger.debug(`Uploading ${fileName}`);
+                    });
+
+                    form.on('error', (err) => {
+                        logger.error(err);
+                        reject(err);
+                    });
+
+                    form.on('end', () => {
+                        logger.debug(`File uploaded: ${fileName}`);
+                        resolve(fileName!);
+                    });
+                }catch(err){
+                    logger.error(err);
+                    reject(err);
+                }
+            }
+        )
+
+        if(fileData === null) return res.status(400).json({ message: 'No image provided' });
+
+        // File uploaded
+        imageData.name = fileData;
+        imageData.path = `${profileId}/${fileData}`;
+        logger.debug(`image data: ${imageData.path}`);
+        const image = await ImageService.create(imageData, sftp);
+        return res.status(201).json(image);
     }catch(err){
+        logger.error(err);
         return res.status(500).json(err);
     }
 });
