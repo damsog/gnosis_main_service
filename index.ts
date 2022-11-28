@@ -124,7 +124,7 @@ https.createServer(options, app).listen(app.get('port'), () => {
     );
     // Cool subtitle
     console.log( 
-            figlet.textSync("Central Server", "Alligator2")
+            figlet.textSync("Main Service", "Alligator2")
         
     );  
     logger.info( colorText( "SERVER CONFIG INFO: Resources folder resides on: " + process.env.RESOURCES_PATH) );
