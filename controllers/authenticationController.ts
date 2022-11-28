@@ -5,7 +5,7 @@ import { AuthenticationService } from '../services/authenticationService';
 
 /**
  * @swagger
- * /api/auth/register:
+ * /api/access/register:
  *  post:
  *      summary: Create a new user
  *      tags: [Authentication]
@@ -47,7 +47,7 @@ import { AuthenticationService } from '../services/authenticationService';
 
 /**
  * @swagger
- * /api/auth/login:
+ * /api/access/login:
  *  post:
  *      summary: Login user
  *      tags: [Authentication]

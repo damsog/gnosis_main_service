@@ -100,12 +100,13 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json({limit: '50mb'}));
 
 // API
-app.use('/api/auth', require('./controllers/authenticationController'));
+app.use('/api/access', require('./controllers/authenticationController'));
 app.use('/api/user', authenticator, require('./controllers/userController'));
 app.use('/api/profile', authenticator, require('./controllers/profileController'));
 app.use('/api/group', authenticator, require('./controllers/groupController'));
 app.use('/api/image', authenticator, require('./controllers/imageController'));
 app.use('/api/profile-group', authenticator, require('./controllers/profileGroupController'));
+app.use('/api/detection', authenticator, require('./controllers/detectionController'));
 
 const options = {
     key: fs.readFileSync(process.env.SSL_KEY!),

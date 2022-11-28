@@ -22,7 +22,7 @@ export class AuthenticationService {
         const token = jwt.sign(
             {
                 userId: user.id, 
-                userEmail: email
+                email: email
             },
             process.env.TOKEN_KEY!,
             {expiresIn: "1h"}
@@ -31,7 +31,7 @@ export class AuthenticationService {
         
         // Appends the token to the response | Weird casting from moongoose object to JSON
         let userJson = JSON.parse(JSON.stringify(user));
-        userJson.token = `Bearer ${token}`;
+        userJson.token = token;
 
         return userJson;
     }
