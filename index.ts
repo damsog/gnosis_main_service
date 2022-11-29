@@ -108,15 +108,26 @@ app.use('/api/image', authenticator, require('./controllers/imageController'));
 app.use('/api/profile-group', authenticator, require('./controllers/profileGroupController'));
 app.use('/api/detection', authenticator, require('./controllers/detectionController'));
 
-const options = {
-    key: fs.readFileSync(process.env.SSL_KEY!),
-    cert: fs.readFileSync(process.env.SSL_CERT!)
+// ssl certificate
+let sslOptions;
+try{
+    sslOptions = {
+        key: fs.readFileSync(process.env.SSL_KEY!),
+        cert: fs.readFileSync(process.env.SSL_CERT!)
+    }
+}catch(err){
+    logger.warn( colorText( "SSL Certificate not found. running for http without security") );
 }
 
-/************************************************************************************************
- *                                             Running
-*************************************************************************************************/
-https.createServer(options, app).listen(app.get('port'), () => {
+// FrontEnd. Serving Frontend files as static public files
+app.use(express.static('public/dist'));
+
+// Serving frontend routes
+app.get('/*', (req, res) => { 
+    res.sendFile(path.join(__dirname, 'public/dist', 'index.html')); 
+});
+
+const serverInitInfo = () => {
 
     // Sick title
     console.log( 
@@ -132,4 +143,15 @@ https.createServer(options, app).listen(app.get('port'), () => {
     logger.info( colorText( "SERVER CONFIG INFO: Server running on port: " + process.env.PORT) );
     logger.info( colorText( "SERVER CONFIG INFO: Connecting to Face Analytics server on : " + process.env.FACE_ANALYTICS_SERVER) );
     logger.info( colorText( "SERVER CONFIG INFO: Connecting to Face Analytics server on port : " + process.env.FACE_ANALYTICS_PORT) );
-});
+}
+
+/************************************************************************************************
+ *                                             Running
+*************************************************************************************************/
+if(sslOptions){
+    logger.info( colorText( "SERVER CONFIG INFO: Running on https") );
+    https.createServer(sslOptions, app).listen(app.get('port'), () => serverInitInfo() );
+}else{
+    logger.warn( colorText( "SSL Certificate not found. running for http without security") );
+    http.createServer(app).listen(app.get('port'), () => serverInitInfo() );
+}
