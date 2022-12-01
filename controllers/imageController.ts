@@ -199,19 +199,18 @@ router.post('/', async (req: Request<{}, any, any, ImageQueryParams>, res) => {
     if(req.body === undefined) return res.status(400).json({ message: 'No image provided' });
     
     try{
-        const imageData: ImageBaseDM = {
+        var imageData: ImageBaseDM = {
             name: name,
             path: '',
             coder: '',
             isCoded: false,
             profileId: profileId
-        }
-
+        };
 
         const publicFolder = path.join(__dirname, "../tmp/");
         let form = new Formidable.IncomingForm();
         
-        const fileData = await new Promise<string>(
+        const filePath = await new Promise<string>(
             async (resolve, reject) => {
                 
                 try{
@@ -219,9 +218,9 @@ router.post('/', async (req: Request<{}, any, any, ImageQueryParams>, res) => {
                     form.parse(req);
 
                     form.on('fileBegin', (name, file) => {
-                        fileName = `${name}${path.extname(file.originalFilename!)}`;
+                        fileName = `${imageData.name}${path.extname(file.originalFilename!)}`;
                         logger.debug(`Read data, filename ${fileName}`);
-                        file.filepath = `${publicFolder}${name}${path.extname(file.originalFilename!)}`;
+                        file.filepath = `${publicFolder}${fileName}`;
                     });
 
                     form.on('file', async (name, file) => {
@@ -244,11 +243,11 @@ router.post('/', async (req: Request<{}, any, any, ImageQueryParams>, res) => {
             }
         )
 
-        if(fileData === null) return res.status(400).json({ message: 'No image provided' });
+        if(filePath === null) return res.status(400).json({ message: 'No image provided' });
 
         // File uploaded
-        imageData.name = fileData;
-        imageData.path = `${profileId}/${fileData}`;
+        imageData.name = filePath;
+        imageData.path = `${profileId}/${filePath}`;
         logger.debug(`image data: ${imageData.path}`);
         const image = await ImageService.create(imageData, sftp);
         return res.status(201).json(image);
