@@ -87,6 +87,7 @@ export class ImageService {
                 profileId: profileId
             }
         });
+        if(images.length === 0) throw new Error("Images not found");
 
         const imagePaths = images.map(image => `/files/${image.path}`);
         const imageIdsRead = images.map(image => image.id);
