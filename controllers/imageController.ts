@@ -259,6 +259,43 @@ router.post('/', async (req: Request<{}, any, any, ImageQueryParams>, res) => {
 
 /**
  * @swagger
+ * /api/image/encode:
+ *  post:
+ *      summary: Encode an image
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Images]
+ *      requestBody:
+ *          required: true
+ *          content: 
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/imagesToCode'
+ *      responses:
+ *          200:
+ *              description: Image just created
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/image'
+ *                                
+ */
+router.post('/encode', async (req, res) => {
+    try{
+        const { imageIds } = req.body;
+        const encodedImage = await ImageService.encodeImages(imageIds, sftp);
+        
+        return res.status(200).json("encodedImage");
+    }catch(err){
+        logger.error(err);
+        return res.status(500).json(err);
+    }
+});
+
+/**
+ * @swagger
  * /api/image/{id}:
  *  put:
  *      summary: Update an image

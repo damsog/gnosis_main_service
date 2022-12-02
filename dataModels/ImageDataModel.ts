@@ -16,6 +16,10 @@ export interface ImageDM extends ImageBaseDM {
     updatedAt: Date;
 }
 
+export interface InagesToCodeDM {
+    imagesIds: string[];
+}
+
 /**
  * @swagger
  * components:
@@ -81,6 +85,20 @@ export interface ImageDM extends ImageBaseDM {
  *              profileId:
  *                  type: string
  *                  description: id of the parent profile 
+*/
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      imagesToCode:
+ *          type: object
+ *          properties:
+*               imageIds:
+*                   type: array
+*                   items:
+*                       type: string
+*                   description: Route of the refference img
 */
 
 module.exports = router;

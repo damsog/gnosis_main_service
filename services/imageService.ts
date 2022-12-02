@@ -5,6 +5,7 @@ import SftpService from './sftpService';
 import logger from '../lib/logger';
 import path from 'path';
 import fs from 'fs';
+import { EncodingService } from './encodingService';
 
 export class ImageService {
     static async getAll(): Promise<Image[]> {
@@ -64,6 +65,23 @@ export class ImageService {
         // if Success deletes the temp file
         await fs.unlinkSync(`${publicFolder}${imageCreated.name}`);   
         return imageCreated;
+    }
+
+    static async encodeImages(imageIds: string | string[], sftpClient: any): Promise<any> {
+        const images = await prisma.image.findMany({
+            where: {
+                id: {
+                    in: imageIds
+                }
+            }
+        });
+
+        const imagePaths = images.map(image => image.path);
+
+        const response = await  EncodingService.encode(imagePaths, sftpClient);
+        logger.debug(`EncodingService.encode: ${response}`);
+
+        return response;
     }
     
     static async update(id: string, image: ImageBaseDM): Promise<Image | null> {
