@@ -1,6 +1,8 @@
+import Client from 'ssh2-sftp-client';
+
 class SftpService {
-    sftpClient: any;
-    constructor(sftpClient: any) {
+    sftpClient: Client;
+    constructor(sftpClient: Client) {
         this.sftpClient = sftpClient;
     }
 
@@ -30,7 +32,7 @@ class SftpService {
         return dir;
     }
 
-    async download(remotePath: string, localPath: string) {
+    async download(remotePath: string, localPath: string | undefined) {
         const download = await this.sftpClient.get(remotePath, localPath);
         return download;
     }
