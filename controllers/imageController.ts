@@ -283,9 +283,10 @@ router.post('/encode', async (req, res) => {
     const { body } = req;
     try{
         if(
-            "imageIds" in body && body.imageIds instanceof Array
+            "profileId" in body && typeof body.profileId === 'string' &&
+            (body.imageIds instanceof Array) ? ("imageIds" in body ) : true
         ){
-            const encodedImage = await ImageService.encodeImages(body.imageIds, sftp);
+            const encodedImage = await ImageService.encodeImages(body.imageIds, body.profileId ,sftp);
             return res.status(200).json(encodedImage);
         }
         return res.status(400).json("Bad request");

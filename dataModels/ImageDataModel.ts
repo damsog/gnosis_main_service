@@ -94,11 +94,12 @@ export interface ImagesToCodeDM {
  *      imagesToCode:
  *          type: object
  *          properties:
-*               imageIds:
-*                   type: array
-*                   items:
-*                       type: string
-*                   description: Route of the refference img
+ *               profileId:
+ *               imageIds:
+ *                   type: array
+ *                   items:
+ *                       type: string
+ *                   description: Route of the refference img
 */
 
 module.exports = router;
