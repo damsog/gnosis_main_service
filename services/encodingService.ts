@@ -9,7 +9,7 @@ export class EncodingService{
         
         const sftpService = new SftpService(sftpClient);
 
-        let faservice_response: any;
+        let encoding_response: any;
 
         // In case only one image is sent we need to call the single image endpoint
         if(imagePaths.length === 1){
@@ -23,7 +23,15 @@ export class EncodingService{
             var url = `http://${process.env.FACE_ANALYTICS_SERVER}:${process.env.FACE_ANALYTICS_PORT}/encoder/image`;
 
             // Requesting to the Recognition Service
-           faservice_response = await axios.post(url, form, { headers: form.getHeaders() });
+            const faservice_response = await axios.post(url, form, { headers: form.getHeaders() });
+
+            const data = [{
+                "image": 0,
+                "embedding": faservice_response.data
+            }];
+
+            encoding_response = {};
+            encoding_response[key] = data;
 
         // In case more than one image is sent we need to call the batch endpoint
         }else{
@@ -51,9 +59,11 @@ export class EncodingService{
             var url = `http://${process.env.FACE_ANALYTICS_SERVER}:${process.env.FACE_ANALYTICS_PORT}/encoder/images`;
 
             // Requesting to the Recognition Service
-           faservice_response = await axios.post(url, form, { headers: form.getHeaders() });
+           const faservice_response = await axios.post(url, form, { headers: form.getHeaders() });
+
+           encoding_response = faservice_response.data;
         }
         
-        return faservice_response.data;
+        return encoding_response;
     }
 }
