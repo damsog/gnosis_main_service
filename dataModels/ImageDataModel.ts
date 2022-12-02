@@ -16,7 +16,7 @@ export interface ImageDM extends ImageBaseDM {
     updatedAt: Date;
 }
 
-export interface InagesToCodeDM {
+export interface ImagesToCodeDM {
     imagesIds: string[];
 }
 

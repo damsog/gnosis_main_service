@@ -4,11 +4,8 @@ const router = express.Router();
 import Formidable, { Fields, Files } from 'formidable';
 import path from 'path';
 import logger from '../lib/logger';
-import { ImageBaseDM } from '../dataModels/ImageDataModel';
+import { ImageBaseDM, ImagesToCodeDM } from '../dataModels/ImageDataModel';
 import sftp from '../configurations/sftpinit';
-import sftpService from '../services/sftpService';
-import SftpService from '../services/sftpService';
-import { FieldRef } from '@prisma/client/runtime';
 
 /**
  * @swagger
@@ -283,11 +280,15 @@ router.post('/', async (req: Request<{}, any, any, ImageQueryParams>, res) => {
  *                                
  */
 router.post('/encode', async (req, res) => {
+    const { body } = req;
     try{
-        const { imageIds } = req.body;
-        const encodedImage = await ImageService.encodeImages(imageIds, sftp);
-        
-        return res.status(200).json("encodedImage");
+        if(
+            "imageIds" in body && body.imageIds instanceof Array
+        ){
+            const encodedImage = await ImageService.encodeImages(body.imageIds, sftp);
+            return res.status(200).json(encodedImage);
+        }
+        return res.status(400).json("Bad request");
     }catch(err){
         logger.error(err);
         return res.status(500).json(err);
