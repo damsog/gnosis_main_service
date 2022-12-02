@@ -5,7 +5,7 @@ import formdata from 'form-data';
 import path from "path";
 
 export class EncodingService{
-    static async encode(imagePaths: string[], sftpClient: Client): Promise<string[]> {
+    static async encode(imagePaths: string[],key: string, sftpClient: Client): Promise<string[]> {
         
         const sftpService = new SftpService(sftpClient);
 
@@ -45,7 +45,7 @@ export class EncodingService{
             }
             
             // The name key
-            form.append('key', 'felipe');
+            form.append('key', key);
             
             // batch endpoint
             var url = `http://${process.env.FACE_ANALYTICS_SERVER}:${process.env.FACE_ANALYTICS_PORT}/encoder/images`;
