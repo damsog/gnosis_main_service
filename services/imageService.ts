@@ -67,18 +67,28 @@ export class ImageService {
         return imageCreated;
     }
 
-    static async encodeImages(imageIds: string[], sftpClient: any): Promise<any> {
+    static async encodeImages(imageIds: string[] | undefined, profileId: string, sftpClient: any): Promise<any> {
+        // Obtaining the profile. we need its name
+        const profile = await prisma.profile.findFirst({
+            where: {
+                id: profileId
+            }
+        });
+        if(!profile){
+            throw new Error("Profile not found");
+        }
+
+        // If no images are sent, encode all the images of the profile
         const images = await prisma.image.findMany({
             where: {
-                id: {
-                    in: imageIds
-                }
+                id: { in: imageIds },
+                profileId: profileId
             }
         });
 
         const imagePaths = images.map(image => `/files/${image.path}`);
 
-        const response = await  EncodingService.encode(imagePaths, sftpClient);
+        const response = await  EncodingService.encode(imagePaths, profile.name ,sftpClient);
         logger.debug(`EncodingService.encode: ${response}`);
 
         return response;
