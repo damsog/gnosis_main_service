@@ -75,8 +75,10 @@ export class ImageService {
             }
         });
         if(!profile){
+            logger.error(`Profile with id ${profileId} not found`);
             throw new Error("Profile not found");
         }
+        logger.debug(`profile: ${profile?.name}`);
 
         // If no images are sent, encode all the images of the profile
         const images = await prisma.image.findMany({
@@ -87,9 +89,31 @@ export class ImageService {
         });
 
         const imagePaths = images.map(image => `/files/${image.path}`);
+        const imageIdsRead = images.map(image => image.id);
 
-        const response = await  EncodingService.encode(imagePaths, profile.name ,sftpClient);
-        logger.debug(`EncodingService.encode: ${response}`);
+        logger.info(`Sending request to recognizer service to encode images for profile: ${profile.name}`);
+        const responseEncoding = await  EncodingService.encode(imagePaths, profile.name ,sftpClient);
+
+        
+        logger.info(`Encoding images for profile: ${profile.name} was successful`);
+        // Update the images to isCoded = true
+        imageIdsRead.forEach(async (imageId, index) => {
+            await prisma.image.updateMany({
+                where: {
+                    id: imageId,
+                    profileId: profileId
+                },
+                data: {
+                    isCoded: true,
+                    coder: responseEncoding[profile.name][index].embedding.toString()
+                }
+            });
+        });
+
+        const response = {
+            message: "Encoding images was successful",
+            images: imageIdsRead,
+        }
 
         return response;
     }
