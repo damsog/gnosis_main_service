@@ -67,7 +67,7 @@ export class ImageService {
         return imageCreated;
     }
 
-    static async encodeImages(imageIds: string | string[], sftpClient: any): Promise<any> {
+    static async encodeImages(imageIds: string[], sftpClient: any): Promise<any> {
         const images = await prisma.image.findMany({
             where: {
                 id: {
@@ -76,7 +76,7 @@ export class ImageService {
             }
         });
 
-        const imagePaths = images.map(image => image.path);
+        const imagePaths = images.map(image => `/files/${image.path}`);
 
         const response = await  EncodingService.encode(imagePaths, sftpClient);
         logger.debug(`EncodingService.encode: ${response}`);
