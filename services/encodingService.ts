@@ -5,7 +5,7 @@ import formdata from 'form-data';
 import path from "path";
 
 export class EncodingService{
-    static async encode(imagePaths: string[],key: string, sftpClient: Client): Promise<string[]> {
+    static async encode(imagePaths: string[],key: string, sftpClient: Client): Promise<any> {
         
         const sftpService = new SftpService(sftpClient);
 
