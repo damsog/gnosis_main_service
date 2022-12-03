@@ -95,6 +95,8 @@ export interface ImagesToCodeDM {
  *          type: object
  *          properties:
  *               profileId:
+ *                  type: string
+ *                  description: id of the parent profile
  *               imageIds:
  *                   type: array
  *                   items:
