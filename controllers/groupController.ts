@@ -1,4 +1,5 @@
 import express from 'express';
+import logger from '../lib/logger';
 import { GroupService } from '../services/groupService';
 const router = express.Router();
 
@@ -60,8 +61,9 @@ router.get('/:id', async (req, res) => {
         if(group) return res.status(200).json(group);
 
         return res.status(204).json();
-    }catch(err){
-        return res.status(500).json(err);
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
     }
 });
 
@@ -98,8 +100,9 @@ router.get('/user/:userId', async (req, res) => {
         if(groups) return res.status(200).json(groups);
 
         return res.status(204).json();
-    }catch(err){
-        return res.status(500).json(err);
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
     }
 });
 
@@ -140,8 +143,9 @@ router.post('/', async (req, res) => {
         }
 
         return res.status(400).json({ message: "Invalid request" });
-    }catch(err){
-        return res.status(500).json(err);
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
     }
 });
 
@@ -184,8 +188,48 @@ router.put('/:id', async (req, res) => {
         if(group) return res.status(200).json(group);
 
         return res.status(204).json();
-    }catch(err){
-        return res.status(500).json(err);
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
+    }
+});
+
+/**
+ * @swagger
+ * /api/group/dataset/{id}:
+ *  get:
+ *      summary: Generates a dataset for a group
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Groups]
+ *      parameters:
+ *          -   in: path
+ *              name: id
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: group id
+ *      responses:
+ *          200:
+ *              description: Group information
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/group'
+ *                                
+ */
+ router.get('/dataset/:id', async (req, res) => {
+    try{
+        const { id } = req.params;
+        const group = await GroupService.generateDataset(id);
+        if(group) return res.status(200).json(group);
+
+        return res.status(204).json();
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
     }
 });
 
@@ -220,8 +264,9 @@ router.delete('/:id', async (req, res) => {
         const { id } = req.params;
         const group = await GroupService.delete(id);
         return res.status(200).json(group);
-    }catch(err){
-        return res.status(500).json(err);
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
     }
 });
 
