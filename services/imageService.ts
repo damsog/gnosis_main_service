@@ -3,7 +3,7 @@ import { Image } from '@prisma/client';
 import { ImageBaseDM, ImageDM } from '../dataModels/ImageDataModel';
 import SftpService from './sftpService';
 import logger from '../lib/logger';
-import path from 'path';
+import path, { resolve } from 'path';
 import fs from 'fs';
 import { EncodingService } from './encodingService';
 
@@ -27,6 +27,22 @@ export class ImageService {
         const images = await prisma.image.findMany({
             where: {
                 profileId: id
+            }
+        });
+
+        return images;
+    }
+
+    static async getByGroupId(id: string): Promise<Image[]> {
+        const images = await prisma.image.findMany({
+            where: {
+                profile: {
+                    ProfileGroup: {
+                        some: {
+                            groupId: id
+                        }
+                    }
+                }
             }
         });
 
@@ -98,22 +114,29 @@ export class ImageService {
         
         logger.info(`Encoding images for profile: ${profile.name} was successful`);
         // Update the images to isCoded = true
-        imageIdsRead.forEach(async (imageId, index) => {
-            await prisma.image.updateMany({
-                where: {
-                    id: imageId,
-                    profileId: profileId
-                },
-                data: {
-                    isCoded: true,
-                    coder: responseEncoding[profile.name][index].embedding.toString()
-                }
+        // Had to promisify the the loop because it was not waiting for the loop
+        let codes = await new Promise<string[]>(resolve => {
+            let codes: string[] = [];
+
+            imageIdsRead.forEach(async (imageId, index) => {
+                await prisma.image.update({
+                    where: {
+                        id: imageId
+                    },
+                    data: {
+                        isCoded: true,
+                        coder: responseEncoding[profile.name][index].embedding.toString()
+                    }
+                });
+                codes.push(responseEncoding[profile.name][index].embedding.toString());
+
+                if (index === imageIdsRead.length - 1) resolve(codes);
             });
         });
 
         const response = {
             message: "Encoding images was successful",
-            images: imageIdsRead,
+            images: imageIdsRead
         }
 
         return response;
