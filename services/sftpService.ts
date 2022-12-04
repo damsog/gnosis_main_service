@@ -12,7 +12,7 @@ class SftpService {
       return list;
     }
 
-    async upload(localPath: string, remotePath: string) {
+    async upload(localPath: string | Buffer | NodeJS.ReadableStream, remotePath: string) {
         const upload = await this.sftpClient.put(localPath, remotePath);
         return upload;
     }
