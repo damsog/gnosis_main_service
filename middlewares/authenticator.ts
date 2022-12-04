@@ -12,7 +12,6 @@ const authenticator = (req:RequestWithUser, res:Response, next: () => any) => {
     }
     try {
         const token = tokenBearer.split("Bearer ")[1];
-        logger.debug( `authenticator: Verifying token: ${token}` );
         const decoded = jwt.verify(token, process.env.TOKEN_KEY!);
         
         logger.info( `authenticator: token validated` );
