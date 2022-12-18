@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  app:
+    image: laguzs/gnosis_main_service:1.1
+    container_name: gnosis_main_service
+    build: .
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./certificates:/app/certificates
+      - ./public:/app/public
