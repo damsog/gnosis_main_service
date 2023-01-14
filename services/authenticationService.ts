@@ -13,9 +13,11 @@ export class AuthenticationService {
 
         const user = await UserService.getEmail(email);
         if (!user) { throw new Error("User not found");}
+
+        if (!user.password) { throw new Error("Login Method not allowed. user had not set a password");}
         
         // Matching password
-        if( !(await Encryptor.matchPassword(password, user.password)) ){ throw new Error("Invalid Credentials"); }
+        if( !(await Encryptor.matchPassword(password, user.password!)) ){ throw new Error("Invalid Credentials"); }
         
         logger.debug( `Password matched` );
         // Creating an access token for the user
