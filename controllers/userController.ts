@@ -71,6 +71,86 @@ router.get('/id/:id', async (req, res) => {
 
 /**
  * @swagger
+ * /api/user/genapikey/{id}:
+ *  get:
+ *      summary: Generate api key for user
+ *      tags: [Users]
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *          -   in: path
+ *              name: id
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: user id
+ *      responses:
+ *          200:
+ *              description: User
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/user'
+ *          404:
+ *              description: User not found
+ *                                                               
+ */
+
+router.get('/genapikey/:id', async (req, res) => {
+    const { id } = req.params;
+    try{
+        const user = await UserService.genertateApiKey(id);
+        if(user) return res.status(200).json(user);
+
+        return res.status(404).json();
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
+    }
+});
+
+/**
+ * @swagger
+ * /api/user/apikey/{id}:
+ *  get:
+ *      summary: Generate api key for user
+ *      tags: [Users]
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *          -   in: path
+ *              name: id
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: user id
+ *      responses:
+ *          200:
+ *              description: User
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/user'
+ *          404:
+ *              description: User not found
+ *                                                               
+ */
+
+router.get('/apikey/:apikey', async (req, res) => {
+    const { apikey } = req.params;
+    try{
+        const user = await UserService.getByApiKey(apikey);
+        if(user) return res.status(200).json(user);
+
+        return res.status(404).json();
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
+    }
+});
+
+/**
+ * @swagger
  * /api/user/email/{email}:
  *  get:
  *      summary: Return user by email

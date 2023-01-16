@@ -1,6 +1,7 @@
 import prisma from '../configurations/dbinit';
 import { User } from '@prisma/client';
 import { UserBaseDM } from '../dataModels/UserDataModel';
+import crypto from 'crypto';
 
 export class UserService {
     static async getAll(): Promise<User[]> {
@@ -12,6 +13,29 @@ export class UserService {
         const user =  await prisma.user.findFirst({
             where: {
                 id: id
+            }
+        });
+
+        return user;
+    }
+
+    static async genertateApiKey(id: string): Promise<User | null> {
+        const user = await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                apiKey: crypto.randomUUID()
+            }
+        });
+
+        return user;
+    }
+
+    static async getByApiKey(apiKey: string): Promise<User | null> {
+        const user = await prisma.user.findFirst({
+            where: {
+                apiKey: apiKey
             }
         });
 

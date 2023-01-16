@@ -10,6 +10,7 @@ export interface UserBaseDM {
     lastName: string | null | undefined;
     image: string | null | undefined;
     emailVerified: Date | null | undefined;
+    apiKey: string | null | undefined;
 }
 
 export interface UserDM extends UserBaseDM {
@@ -53,6 +54,9 @@ export interface UserDM extends UserBaseDM {
  *              emailVerified:
  *                 type: boolean
  *                 description: if the email is verified
+ *              apiKey:
+ *                  type: string
+ *                  description: key to use the api
  *              createdAt:
  *                  type: string
  *                  description: time
