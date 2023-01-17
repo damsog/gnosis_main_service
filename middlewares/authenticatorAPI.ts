@@ -4,7 +4,7 @@ import { Response } from "express";
 import { RequestWithUser } from "../dataModels/AuthenticationModels";
 import { UserService } from "../services/userService";
 
-const authenticator = async (req:RequestWithUser, res:Response, next: () => any) => {
+const authenticatorAPI = async (req:RequestWithUser, res:Response, next: () => any) => {
     const tokenBearer = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers["authorization"];
 
     if(!tokenBearer) {
@@ -25,4 +25,4 @@ const authenticator = async (req:RequestWithUser, res:Response, next: () => any)
     }
 }
 
-export default authenticator;
+export default authenticatorAPI;
