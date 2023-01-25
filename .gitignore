@@ -10,3 +10,4 @@ public/*
 certificates/*
 !certificates/.gitkeep
 dist/
+.vscode/

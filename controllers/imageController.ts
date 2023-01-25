@@ -4,7 +4,8 @@ const router = express.Router();
 import Formidable, { Fields, Files } from 'formidable';
 import path from 'path';
 import logger from '../lib/logger';
-import { ImageBaseDM, ImagesToCodeDM } from '../dataModels/ImageDataModel';
+import { ImageBaseDM, ImageDM } from '../dataModels/ImageDataModel';
+import { Image } from '@prisma/client';
 import sftp from '../configurations/sftpinit';
 
 /**
@@ -73,7 +74,67 @@ router.get('/:id', async (req, res) => {
  * @swagger
  * /api/image/profile/{profileId}:
  *  get:
- *      summary: Return an image given its id
+ *      summary: Return the images of a profile
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Images]
+ *      parameters:
+ *          -   in: path
+ *              name: profileId
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: Profile id
+ *          -   in: query
+ *              name: base64
+ *              schema:
+ *                  type: boolean
+ *              required: false
+ *              description: To return the images as base64 or not
+ *      responses:
+ *          200:
+ *              description: Coder information
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/image'
+ *                                
+ */
+
+interface ImageExt extends Image {
+    imageBase64: string|undefined;
+}
+
+router.get('/profile/:profileId', async (req: Request<{profileId: string}, any, any, {base64: boolean | undefined;}>, res) => {
+    try{
+        const { profileId } = req.params;
+        const { base64 } = req.query;
+        const images = await ImageService.getByProfileId(profileId);
+        if(!images) return res.status(204).json();
+
+        if(!base64) return res.status(200).json(images);
+
+        const imageBuffers = await ImageService.getImagesBufferByProfileId(profileId, sftp);
+        let imagesExt:ImageExt[] = [];
+        imageBuffers.forEach((imageBuffer, index) => {
+            return imagesExt.push({
+                ...images[index],
+                imageBase64: imageBuffer.toString('base64')
+            });
+        });
+        return res.status(200).json(imagesExt);
+    }catch(err){
+        return res.status(500).json(err);
+    }
+});
+
+/**
+ * @swagger
+ * /api/image/buffer/profile/{profileId}:
+ *  get:
+ *      summary: Return the images of a profile as buffer
  *      security:
  *          - bearerAuth: []
  *      tags: [Images]
@@ -95,13 +156,26 @@ router.get('/:id', async (req, res) => {
  *                              $ref: '#/components/schemas/image'
  *                                
  */
-router.get('/profile/:profileId', async (req, res) => {
+router.get('/buffer/profile/:profileId', async (req, res) => {
     try{
         const { profileId } = req.params;
-        const images = await ImageService.getByProfileId(profileId);
-        if(images) return res.status(200).json(images);
+        const imageBuffers = await ImageService.getImagesBufferByProfileId(profileId, sftp);
+        if(!imageBuffers) return res.status(204).json();
 
-        return res.status(204).json();
+        //res.setHeader('Content-Type', 'multipart/mixed');
+        //imageBuffers.forEach((imageBuffer) => {
+        //    res.write(`--boundary\n`);
+        //    res.write(`Content-Type: image/${imageBuffer.imageExt}\n`);
+        //    res.write(`Content-length: ${imageBuffer.imageBuffer.length}\n`);
+        //    res.write(`\n`);
+        //    res.write(imageBuffer);
+        //});
+
+        //Dont know if this is the best way to do it, but sending the list of image buffers as a json object
+        let imageBuffersJson:string[] = [];
+        imageBuffers.forEach((imageBuffer) => imageBuffersJson.push( imageBuffer.toString('base64') ) );
+        
+        return res.status(200).json(imageBuffersJson);
     }catch(err){
         return res.status(500).json(err);
     }

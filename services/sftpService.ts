@@ -37,6 +37,11 @@ class SftpService {
         return download;
     }
 
+    async get(remotePath: string) {
+        const download = await this.sftpClient.get(remotePath);
+        return download;
+    }
+
     async delete(remotePath: string) {
         const deleteFile = await this.sftpClient.delete(remotePath);
         return deleteFile;

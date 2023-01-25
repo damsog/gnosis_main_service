@@ -6,6 +6,7 @@ import logger from '../lib/logger';
 import path, { resolve } from 'path';
 import fs from 'fs';
 import { EncodingService } from './encodingService';
+import Client from 'ssh2-sftp-client';
 
 export class ImageService {
     static async getAll(): Promise<Image[]> {
@@ -31,6 +32,22 @@ export class ImageService {
         });
 
         return images;
+    }
+
+    static async getImagesBufferByProfileId(id: string, sftpClient: Client): Promise<Buffer[]> {
+        const images = await prisma.image.findMany({
+            where: {
+                profileId: id
+            }
+        });
+
+        const sftpService = new SftpService(sftpClient);
+
+        // Obtaining the images as buffers. using Promise.all because await doesn't work for an array of promises, 
+        //and promises.all returns a single promise from an array of promises
+        const imagesBuffer:Buffer[] = await Promise.all( images.map(async (image) => await sftpService.get(`/files/${image.path}`) as Buffer ) );
+               
+        return imagesBuffer;
     }
 
     static async getByGroupId(id: string): Promise<Image[]> {
