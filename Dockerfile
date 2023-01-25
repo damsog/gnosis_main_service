@@ -29,6 +29,7 @@ COPY --from=builder /app/dist ./dist
 
 COPY --from=builder /app/dataModels ./dataModels
 COPY --from=builder /app/controllers ./controllers
+RUN mkdir /app/dist/tmp
 
 EXPOSE 3000
 
