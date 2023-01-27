@@ -8,6 +8,11 @@ export interface ProfileGroupBaseDM {
     groupId: string;
 }
 
+export interface ProfileGroupBaseMDM {
+    profileIds: string[];
+    groupId: string;
+}
+
 export interface ProfileGroupDM extends ProfileGroupBaseDM {
     id: string;
     createdAt: Date;
@@ -51,6 +56,26 @@ export interface ProfileGroupDM extends ProfileGroupBaseDM {
  *          properties:
  *              profileId:
  *                  type: string
+ *                  description: if of a belonging profile
+ *              groupId:
+ *                  type: string
+ *                  description: id of the parent group
+*/
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      profileGroupToCreateArray:
+ *          type: object
+ *          required:
+ *              - profileIds
+ *              - groupId
+ *          properties:
+ *              profileIds:
+ *                  type: array
+ *                  items:
+ *                      type: string
  *                  description: if of a belonging profile
  *              groupId:
  *                  type: string

@@ -105,6 +105,47 @@ router.post('/', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/profile-group/array:
+ *  post:
+ *      summary: Create a new profile group
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Profile-Groups]
+ *      requestBody:
+ *          required: true
+ *          content: 
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/profileGroupToCreateArray'
+ *      responses:
+ *          200:
+ *              description: Profile Group created
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/profileGroup'
+ *                                
+ */
+router.post('/array', async (req, res) => {
+    const { body } = req;
+    try{
+        if(
+            "profileIds" in body && Array.isArray(body.profileIds) &&
+            "groupId" in body && typeof body.groupId === "string"
+        ){
+            const profileGroups = await ProfileGroupService.createMultiple(body);
+            return res.status(201).send(profileGroups);
+        }
+        return res.status(400).json({ message: "Invalid request" });
+    }catch(error: any){
+        return res.status(500).json({error: error.message});
+    }
+});
+
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     try{

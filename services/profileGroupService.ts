@@ -1,6 +1,6 @@
 import prisma from '../configurations/dbinit';
 import { ProfileGroup } from '@prisma/client';
-import { ProfileGroupBaseDM, ProfileGroupDM } from '../dataModels/ProfileGroupDataModel';
+import { ProfileGroupBaseDM, ProfileGroupBaseMDM, ProfileGroupDM } from '../dataModels/ProfileGroupDataModel';
 
 export class ProfileGroupService {
     static async getAll(): Promise<ProfileGroup[]> {
@@ -16,6 +16,26 @@ export class ProfileGroupService {
         });
 
         return profileGroup;
+    }
+
+    static async createMultiple(profileGroupsToCreate: ProfileGroupBaseMDM): Promise<ProfileGroup[]> {
+        const profileIds = profileGroupsToCreate.profileIds;
+        let profileGroupsCreated: ProfileGroup[] = [];
+
+        // Loop through the profileIds and create a profileGroup for each
+        for(const profileId of profileIds) {
+            const data = {groupId: profileGroupsToCreate.groupId, profileId: profileId}
+
+            const profileGroupCreated = await prisma.profileGroup.create({
+                data: {
+                    ...data
+                }
+            });
+
+            profileGroupsCreated.push(profileGroupCreated);
+        }
+
+        return profileGroupsCreated;
     }
 
     static async create(profileGroup: ProfileGroupBaseDM): Promise<ProfileGroup> {
