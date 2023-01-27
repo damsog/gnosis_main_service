@@ -66,7 +66,7 @@ export interface ProfileGroupDM extends ProfileGroupBaseDM {
  * @swagger
  * components:
  *  schemas:
- *      profileGroupToCreateArray:
+ *      profileGroupToCreateMany:
  *          type: object
  *          required:
  *              - profileIds
@@ -80,6 +80,21 @@ export interface ProfileGroupDM extends ProfileGroupBaseDM {
  *              groupId:
  *                  type: string
  *                  description: id of the parent group
+*/
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      profileGroupToDeleteMany:
+ *          type: object
+ *          required:
+ *              - profileGroupIds
+ *          properties:
+ *              profileGroupIds:
+ *                  type: array
+ *                  items:
+ *                      type: string
 */
 
 /**

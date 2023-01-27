@@ -1,5 +1,5 @@
 import prisma from '../configurations/dbinit';
-import { ProfileGroup } from '@prisma/client';
+import { Prisma, ProfileGroup } from '@prisma/client';
 import { ProfileGroupBaseDM, ProfileGroupBaseMDM, ProfileGroupDM } from '../dataModels/ProfileGroupDataModel';
 
 export class ProfileGroupService {
@@ -18,7 +18,7 @@ export class ProfileGroupService {
         return profileGroup;
     }
 
-    static async createMultiple(profileGroupsToCreate: ProfileGroupBaseMDM): Promise<ProfileGroup[]> {
+    static async createMany(profileGroupsToCreate: ProfileGroupBaseMDM): Promise<ProfileGroup[]> {
         const profileIds = profileGroupsToCreate.profileIds;
         let profileGroupsCreated: ProfileGroup[] = [];
 
@@ -65,6 +65,16 @@ export class ProfileGroupService {
         const profileGroup = await prisma.profileGroup.delete({
             where: {
                 id: id
+            }
+        });
+
+        return profileGroup;
+    }
+
+    static async deleteMany(ids: string[]): Promise<Prisma.BatchPayload | null> {
+        const profileGroup = await prisma.profileGroup.deleteMany({
+            where: {
+                id: { in: ids }
             }
         });
 
