@@ -148,6 +148,47 @@ router.get('/user/:userId', async (req, res) => {
 
 /**
  * @swagger
+ * /api/profile/not-belong-group/{groupId}:
+ *  get:
+ *      summary: Return all profiles that do not belong to a group for a user
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Profiles]
+ *      parameters:
+ *          -   in: path
+ *              name: groupId
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: group id
+ *      responses:
+ *          200:
+ *              description: list of all profiles in a group
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/profile'
+ *                                
+ */
+
+router.get('/not-belong-group/:groupId', async (req, res) => {
+    try{
+        const { groupId } = req.params;
+        const profiles = await ProfileService.getNotBelongingToGroupId(groupId);
+        if(profiles) return res.status(200).json(profiles);
+
+        return res.status(204).json();
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
+    }
+});
+
+
+/**
+ * @swagger
  * /api/profile:
  *  post:
  *      summary: Create a new profile associating it with a user

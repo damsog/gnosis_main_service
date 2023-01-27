@@ -43,6 +43,29 @@ export class ProfileService {
         return profiles;
     }
 
+    static async getNotBelongingToGroupId(groupId: string): Promise<Profile[]> {
+        const group = await prisma.group.findFirst({
+            where: {
+                id: groupId
+            },
+        });
+
+        const profiles = await prisma.profile.findMany({
+            where: {
+                userId: group?.userId,
+                NOT: {
+                    ProfileGroup: {
+                        some: {
+                            groupId: groupId
+                        }
+                    }
+                }
+            }
+        });
+        
+        return profiles;
+    }
+
     static async getByName(name: string): Promise<Profile | null> {
         const profile = await prisma.profile.findFirst({
             where: {
