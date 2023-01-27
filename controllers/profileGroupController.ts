@@ -1,5 +1,4 @@
 import express from 'express';
-import logger from '../lib/logger';
 import { ProfileGroupService } from '../services/profileGroupService';
 const router = express.Router();
 
@@ -224,13 +223,10 @@ router.delete('/one/:id', async (req, res) => {
  */
 router.delete('/many', async (req, res) => {
     const { body } = req;
-    logger.info(`ids: s`);
-
     try{
         if(
             "profileGroupIds" in body && Array.isArray(body.profileGroupIds)
         ){
-            logger.info(`ids: ${JSON.stringify(body.profileGroupIds)}`);
             const deleteCount = await ProfileGroupService.deleteMany(body.profileGroupIds);
             if(deleteCount) return res.status(200).send(deleteCount);
 
