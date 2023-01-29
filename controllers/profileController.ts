@@ -148,7 +148,7 @@ router.get('/user/:userId', async (req, res) => {
 
 /**
  * @swagger
- * /api/profile/not-belong-group/{groupId}:
+ * /api/profile/not-in-group/{groupId}:
  *  get:
  *      summary: Return all profiles that do not belong to a group for a user
  *      security:
@@ -173,7 +173,7 @@ router.get('/user/:userId', async (req, res) => {
  *                                
  */
 
-router.get('/not-belong-group/:groupId', async (req, res) => {
+router.get('/not-in-group/:groupId', async (req, res) => {
     try{
         const { groupId } = req.params;
         const profiles = await ProfileService.getNotBelongingToGroupId(groupId);

@@ -40,7 +40,7 @@ const swaggerOptions = {
         openapi: "3.0.1",
         info: {
             title: 'Platform API',
-            version: "1.3.2",
+            version: "1.3.3",
             description: 'Gnosis platform API'
         },
         servers: [

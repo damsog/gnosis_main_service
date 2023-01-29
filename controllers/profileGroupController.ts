@@ -238,5 +238,48 @@ router.delete('/many', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/profile-group/profiles-in-group:
+ *  delete:
+ *      summary: Deletes multiple Profile-Group Relations
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Profile-Groups]
+ *      requestBody:
+ *          required: true
+ *          content: 
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/profileGroupToDeleteByGroupNProfile'
+ *      responses:
+ *          200:
+ *              description: If operation was succesful
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: string
+ *          404:
+ *              description: User not found
+ *                                
+ */
+router.delete('/profiles-in-group', async (req, res) => {
+    const { body } = req;
+    try{
+        if(
+            "groupId" in body && typeof body.groupId === "string" &&
+            "profileIds" in body && Array.isArray(body.profileIds)
+        ){
+            const deleteCount = await ProfileGroupService.deleteManyByProfileGroup(body.groupId,body.profileIds);
+            if(deleteCount) return res.status(200).send(deleteCount);
+
+            return res.status(204).send();
+        }
+        return res.status(400).json({ message: "Invalid request" });
+    }catch(error: any){
+        return res.status(500).json({error: error.message});
+    }
+});
+
 module.exports = router;
 

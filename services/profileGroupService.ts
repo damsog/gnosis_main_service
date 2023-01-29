@@ -81,4 +81,15 @@ export class ProfileGroupService {
         return profileGroup;
     }
 
+    static async deleteManyByProfileGroup(groupId: string, profileIds: string[]): Promise<Prisma.BatchPayload | null> {
+        const profileGroup = await prisma.profileGroup.deleteMany({
+            where: {
+                groupId: groupId,
+                profileId: { in: profileIds }
+            }
+        });
+
+        return profileGroup;
+    }
+
 }

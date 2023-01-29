@@ -101,6 +101,23 @@ export interface ProfileGroupDM extends ProfileGroupBaseDM {
  * @swagger
  * components:
  *  schemas:
+ *      profileGroupToDeleteByGroupNProfile:
+ *          type: object
+ *          required:
+ *              - profileGroupIds
+ *          properties:
+ *              groupId:
+ *                  type: string
+ *              profileIds:
+ *                  type: array
+ *                  items:
+ *                      type: string
+*/
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
  *      profileGroupToUpdate:
  *          type: object
  *          properties:
