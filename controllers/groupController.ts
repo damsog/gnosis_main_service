@@ -235,6 +235,45 @@ router.put('/:id', async (req, res) => {
 
 /**
  * @swagger
+ * /api/group/dataset/{id}:
+ *  put:
+ *      summary: Deletes a dataset for a group
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Groups]
+ *      parameters:
+ *          -   in: path
+ *              name: id
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: group id
+ *      responses:
+ *          200:
+ *              description: Group information
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/group'
+ *                                
+ */
+router.put('/dataset/:id', async (req, res) => {
+    try{
+        const { id } = req.params;
+        const group = await GroupService.deleteDataset(id);
+        if(group) return res.status(200).json(group);
+
+        return res.status(204).json();
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
+    }
+});
+
+/**
+ * @swagger
  * /api/group/{id}:
  *  delete:
  *      summary: Deletes a group given an id

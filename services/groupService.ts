@@ -139,6 +139,20 @@ export class GroupService {
         return groupUdatedDataset;
     }
 
+    static async deleteDataset(id: string): Promise<Group | null> {
+        const group = await prisma.group.update({
+            where: {
+                id: id
+            },
+            data: {
+                dataset: null,
+                allImagesCoded: false
+            }
+        });
+        
+        return group;
+    }
+
     static async saveDataset(dataset: [string, string][], id: string, sftpClient: any): Promise<boolean> {
         // Save the dataset to the sftp server
         

@@ -11,8 +11,7 @@ interface RecognitionStreamQueryParams {
 router.post('/stream', async (req: Request<{}, any, any, RecognitionStreamQueryParams>, res) => {
     //var { groupId } = req.query;
     try{
-        const groupId = "clb7d4fgb0001purwisyeauae"
-        const { sdp, type } = req.body;
+        const { sdp, type, groupId } = req.body;
         const answerSdp = await RecognitionService.startRecognitionStream(sdp, type, groupId, sftp);
 
         return res.status(200).json(answerSdp);
