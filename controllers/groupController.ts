@@ -108,6 +108,45 @@ router.get('/user/:userId', async (req, res) => {
 
 /**
  * @swagger
+ * /api/group/user/coded/{userId}:
+ *  get:
+ *      summary: Return all coded groups for a user
+ *      security:
+ *          - bearerAuth: []
+ *      tags: [Groups]
+ *      parameters:
+ *          -   in: path
+ *              name: userId
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: user id
+ *      responses:
+ *          200:
+ *              description: list of all groups for a user
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/group'
+ *                                
+ */
+router.get('/user/coded/:userId', async (req, res) => {
+    try{
+        const { userId } = req.params;
+        const groups = await GroupService.getByUserIdCoded(userId);
+        if(groups) return res.status(200).json(groups);
+
+        return res.status(204).json();
+    }catch(error: any){
+        logger.error(error.message);
+        return res.status(500).json({error: error.message});
+    }
+});
+
+/**
+ * @swagger
  * /api/group:
  *  post:
  *      summary: Create a new group associating it with a user

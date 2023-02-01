@@ -43,6 +43,17 @@ export class GroupService {
         return groups;
     }
 
+    static async getByUserIdCoded(userId: string): Promise<Group[]> {
+        const groups = await prisma.group.findMany({
+            where: {
+                userId: userId,
+                allImagesCoded: true
+            }
+        });
+
+        return groups;
+    }
+
     static async getWithAllElements(id: string){
         const group = await prisma.group.findFirst({
             where: {
