@@ -11,3 +11,4 @@ certificates/*
 !certificates/.gitkeep
 dist/
 .vscode/
+deployment/k8s_patched.yaml

@@ -1,0 +1,93 @@
+---
+# ------------------------------------#
+# Namespace                           #
+# ------------------------------------#
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${K8S_NAMESPACE}
+spec:
+  finalizers:
+    - kubernetes
+---
+# ------------------------------------#
+# ConfigMap                           #
+# ------------------------------------#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${K8S_SERVICE_NAME}
+  namespace: ${K8S_NAMESPACE}
+data:
+  DATABASE_URL: ${DATABASE_URL}
+  SERVER: ${SERVER}
+  PORT: "${PORT}"
+  PORT_SWAGGER: "${PORT_SWAGGER}"
+  LOGGER_LEVEL: ${LOGGER_LEVEL}
+  NODE_ENV: ${NODE_ENV}
+  SSL_KEY: ${SSL_KEY}
+  SSL_CERT: ${SSL_CERT}
+  TOKEN_KEY: ${TOKEN_KEY}
+  FACE_ANALYTICS_SERVER: ${FACE_ANALYTICS_SERVER}
+  FACE_ANALYTICS_PORT: "${FACE_ANALYTICS_PORT}"
+  RESOURCES_PATH: ${RESOURCES_PATH}
+  SFTP_HOST: ${SFTP_HOST}
+  SFTP_PORT: "${SFTP_PORT}"
+  SFTP_USER: ${SFTP_USER}
+  SFTP_PASSWORD: "${SFTP_PASSWORD}"
+
+---
+# ------------------------------------#
+# Deployment                          #
+# ------------------------------------#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${K8S_SERVICE_NAME}
+  namespace: ${K8S_NAMESPACE}
+spec:
+  replicas: ${K8S_MIN_REPLICAS}
+  selector:
+    matchLabels:
+      app: ${K8S_SERVICE_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${K8S_SERVICE_NAME}
+    spec:
+      containers:
+      - name: ${K8S_SERVICE_NAME}
+        image: ${IMAGE_NAME}:${IMAGE_TAG}
+        envFrom:
+          - configMapRef:
+            name: ${K8S_SERVICE_NAME}
+        resources:
+          requests:
+            cpu: ${K8S_RESOURCES_REQUESTS_CPU}
+            memory: ${K8S_RESOURCES_REQUESTS_MEMORY}
+          limits:
+            cpu: ${K8S_RESOURCES_LIMITS_CPU}
+            memory: ${K8S_RESOURCES_LIMITS_MEMORY}
+        ports:
+        - containerPort: 80
+
+---
+# ------------------------------------#
+# Service                             #
+# ------------------------------------#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${K8S_SERVICE_NAME}
+  labels:
+    app: ${K8S_SERVICE_NAME}
+  namespace: ${K8S_NAMESPACE}
+spec:
+  selector:
+    app: ${K8S_SERVICE_NAME}
+  type: ClusterIP
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 80
+    name: https
