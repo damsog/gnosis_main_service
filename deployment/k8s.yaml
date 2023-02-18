@@ -62,7 +62,7 @@ spec:
         image: ${IMAGE_NAME}:${IMAGE_TAG}
         envFrom:
           - configMapRef:
-            name: ${K8S_SERVICE_NAME}
+              name: ${K8S_SERVICE_NAME}
         resources:
           requests:
             cpu: ${K8S_RESOURCES_REQUESTS_CPU}
@@ -71,7 +71,7 @@ spec:
             cpu: ${K8S_RESOURCES_LIMITS_CPU}
             memory: ${K8S_RESOURCES_LIMITS_MEMORY}
         ports:
-        - containerPort: 4000
+          - containerPort: 4000
 
 ---
 # ------------------------------------#
@@ -109,6 +109,7 @@ spec:
     http:
       paths:
       - path: "/"
+        pathType: Prefix
         backend:
           service:
             name: ${K8S_SERVICE_NAME}
