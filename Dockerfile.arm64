@@ -1,23 +1,38 @@
+# To build this image, run:
+# docker run --privileged --rm tonistiigi/binfmt --install all
+# The previous command will allow to build images for other architectures. after that, run:
+# docker build -f Dockerfile.arm64 -t laguzs/gnosis_main_service:<tag>-arm64-slim .
+
 # Build step
-FROM arm64v8/node:16 as builder
+FROM arm64v8/node:16-slim as builder
 
 WORKDIR /app
+
+# We need this when we use the node:16-alpine image
+#RUN apk add --update openssl && apk add --update libressl-dev && rm -rf /var/cache/apk/*
+
+# We need this when we use the node:16-slim image
+RUN apt-get update && apt-get install -y openssl libssl-dev
 
 COPY package*.json ./
 COPY prisma ./prisma
 
 RUN npm ci
 
+RUN npx prisma generate
+
 COPY . .
 
 RUN npm run build
 
 # Production step
-FROM arm64v8/node:16
+FROM arm64v8/node:16-slim
 
 WORKDIR /app
 
 COPY package*.json ./
+
+RUN apt-get update && apt-get install -y openssl libssl-dev
 
 RUN npm ci --only=production
 
