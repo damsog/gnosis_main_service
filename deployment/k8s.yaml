@@ -45,6 +45,8 @@ kind: Deployment
 metadata:
   name: ${K8S_SERVICE_NAME}
   namespace: ${K8S_NAMESPACE}
+  labels:
+    app: ${K8S_SERVICE_NAME}
 spec:
   replicas: ${K8S_MIN_REPLICAS}
   selector:
@@ -69,11 +71,11 @@ spec:
             cpu: ${K8S_RESOURCES_LIMITS_CPU}
             memory: ${K8S_RESOURCES_LIMITS_MEMORY}
         ports:
-        - containerPort: 80
+        - containerPort: 4000
 
 ---
 # ------------------------------------#
-# Service                             #
+# Internal Service                    #
 # ------------------------------------#
 apiVersion: v1
 kind: Service
@@ -83,11 +85,54 @@ metadata:
     app: ${K8S_SERVICE_NAME}
   namespace: ${K8S_NAMESPACE}
 spec:
+  type: ClusterIP
   selector:
     app: ${K8S_SERVICE_NAME}
-  type: ClusterIP
   ports:
-  - port: 443
-    protocol: TCP
-    targetPort: 80
-    name: https
+    - protocol: TCP
+      port: 443
+      targetPort: 4000
+      name: https
+---
+# ------------------------------------#
+# Ingress                             #
+# ------------------------------------#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${K8S_SERVICE_NAME}
+  labels:
+    name: ${K8S_SERVICE_NAME}
+spec:
+  rules:
+  - host: ${DOMAIN}
+    http:
+      paths:
+      - path: "/"
+        backend:
+          service:
+            name: ${K8S_SERVICE_NAME}
+            port: 
+              number: 443
+
+---
+# ------------------------------------#
+# Service Node                        #
+# ------------------------------------#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${K8S_SERVICE_NAME}-node
+  labels:
+    app: ${K8S_SERVICE_NAME}
+  namespace: ${K8S_NAMESPACE}
+spec:
+  type: NodePort
+  selector:
+    app: ${K8S_SERVICE_NAME}
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 4000
+      nodePort: 30100
+      name: https
