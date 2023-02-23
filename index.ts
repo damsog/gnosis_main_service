@@ -40,12 +40,12 @@ const swaggerOptions = {
         openapi: "3.0.1",
         info: {
             title: 'Platform API',
-            version: "1.3.5",
+            version: "1.3.7",
             description: 'Gnosis platform API'
         },
         servers: [
             {
-                url: `https://${process.env.SERVER}:${process.env.PORT_SWAGGER}`
+                url: `http${(process.env.SSL_KEY && process.env.SSL_CERT) ? 's' : ''}://${process.env.SERVER}:${process.env.PORT_SWAGGER}`,
            },
         ],
         components: {
