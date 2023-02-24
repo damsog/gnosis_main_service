@@ -5,6 +5,23 @@ Face Detection and Recognition API Server. this server helps to manage and save 
 
 This service manages the application state (Saved data, updates, deletions etc) and serves as the entry point for usage through the API while [Gnosis Recognizer Service](https://github.com/damsog/gnosis-recognizer-service) does the heavy processing.
 
+## :dvd: Components
+
+this application is composed of 5 parts the main service that manages the application working as the central point that joins the rest of the services. <br>
+Manages the user data through a database service that can be run using the service shown below, or connecting to an online service. <br>
+Manages user files (profile images and dataset documents for recognition) consuming an sftp service, that again, can be run using the service below or connecting to an external sftp service. <br>
+Serves an API to allow users to manage their data securely (using a login and jwt or an API token), allows to create simple profiles and upload images for these profiles which can later be encoded, then create groups putting some of the profiles creating a dataset which the recognizer can use. <br>
+Through the API, users can request detection of faces on images, recognition on images (providing a dataset previously created), and also to apply detection and recognition on streams using WebRTC establishing an RTC connection.<br>
+Lastly, to tie it all up, there's also a frontend service made on NextJs (It itself has a backend and offcourse it's frontend) to manage the resources and start rtc connection streams easily.
+manages <br>
+<br>
+
+[gnosis_main_service](https://github.com/damsog/gnosis-main-service) <br>
+[gnosis_recognizer_service](https://github.com/damsog/gnosis-recognizer-service) <br>
+[gnosis_database_service](https://github.com/damsog/gnosis-database-service) (Optional) <br>
+[gnosis_sftp_service](https://github.com/damsog/gnosis-sftp-service) (Optional) <br>
+[gnosis_frontend](https://github.com/damsog/gnosis-frontend) (Optional) <br>
+
 ## :clipboard: Requirements
 The nodejs dependencies can be installed simply by using ```npm ci```.
 
