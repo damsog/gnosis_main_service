@@ -33,3 +33,15 @@ The nodejs dependencies can be installed simply by using ```npm ci```.
 - [Mysql](https://www.mysql.com/) RDBMS. (Maybe deployed locally, from a service or just using docker with [Gnosis DB](https://github.com/damsog/gnosis-database-service))
 - An SFTP Service. you can connect to a service of your choice or just deploy this [SFTP Service Container](https://github.com/damsog/gnosis-sftp-service)
 - [Docker](https://docs.docker.com/engine/install/ubuntu/) (Opcional)
+
+## :wrench: Set Up (Linux)
+
+## :white_check_mark: Run API Service 
+
+### :penguin: *Run from terminal*
+
+### :whale2: *Run as Container*
+
+### :whale2: *Deploy on Kubernetes*
+
+## :wrench: Detailed Description
