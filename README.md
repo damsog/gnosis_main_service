@@ -51,6 +51,10 @@ With nodejs installed you just need to install the dependencies
 ```sh
 npm install
 ```
+Now generate the prisma client models
+```sh
+npx prisma generate
+```
 
 ## :white_check_mark: Run API Service 
 
@@ -67,38 +71,121 @@ DATABASE_URL="mysql://<username>:<password>@<host>:<port>/<dbname>"
 Most variables are pretty straight forward, Set up the port to access the server on the PORT env viariable, the logger level and the deploy env.<br>
 However, SERVER and PORT_SWAGGER serve only one purpose and it's that swagger will use this to make the requests from the UI, so you have to set these two variables to the values you will use to make requets. For example, if you run on localhost, SERVER could be just localhost or your localip and PORT_SWAGGER would be the same as PORT, on the other hand, if your want to access remotely you will have to set SERVER to your remote IP and PORT_SWAGGER to your remote port.<br>
 Lastly, set a key to use as refference for the JWT to TOKEN_KEY. can be whatever you want but it's recomended to be base54 encoded.
-```sh
+```
 SERVER=<server-ip>
 PORT=<server-port>
 PORT_SWAGGER=<server-port-swagger>
 LOGGER_LEVEL=<info/debug>
 NODE_ENV=<development/production>
 TOKEN_KEY=<token-key>
+...
 ```
 Indicate the certificates in case you want to use https. if you want to use http instead, comment these two lines.
-```sh
+```
+...
 SSL_KEY=./certificates/<key.pem>
 SSL_CERT=./certificates/<cert.pem>
+...
 ```
 Set the parameters to reach the [gnosis_recognizer_service](https://github.com/damsog/gnosis-recognizer-service).
-```sh
+```
+...
 FACE_ANALYTICS_SERVER=<recognizer-service-host>
 FACE_ANALYTICS_PORT=<recognizer-service-host>
+...
 ```
 Set the parameters to access the sftp server, be it a local server, and online service or the [gnosis_sftp_service](https://github.com/damsog/gnosis-sftp-service).
 
-```sh
+```
+...
 SFTP_HOST=<sftp-host>
 SFTP_PORT=<sftp-port>
 SFTP_USER=<sftp-user>
 SFTP_PASSWORD=<sftp-password>
+...
 ```
 The next section on the .env file it's used to configure a k8s deployment. if you wonn't run on a cluster ignore this section. <br>
 
 ### :penguin: *Run from terminal*
-
+Before building the app we need to apply the migrations to the DB
+```sh
+npx prisma migrate deploy
+```
+for deploying first build the app
+```sh
+npm run build
+```
+Then, run it with 
+```sh
+npm run start
+```
+And for development
+```sh
+npm run dev
+```
 ### :whale2: *Run as Container*
+Run Docker container.
 
+```sh
+docker run --env-file .env -p <host-port>:4000 laguzs/gnosis_main_service:<tag>
+```
+or in detatched mode
+```sh
+docker run --env-file .env -p <host-port>:4000 laguzs/gnosis_main_service:<tag> -d
+```
+Or for ease, deploy using the docker compose file
+edit the img name for your specific case.
+To run using docker compose
+```sh
+docker compose up
+```
+or in detatched mode
+```sh
+docker compose up -d
+```
+to stop 
+```sh
+docker compose down
+```
+
+Check outputs 
+```sh
+docker logs --tail N <container_id>
+```
 ### :whale2: *Deploy on Kubernetes*
+A template for a deployment is described on deployment/k8s.yaml. there are the definitions for a configmap, a deployemnt, 2 services, one to use as nodeport and one to use as ClusterIP internal service and an ingress if you have a domain. <br>
+The environment variables should be exported from the .env file to the configmap to use on the cluster. so, in addition to the env variables defined in a couple of steps before we need to define certain variables specific to the deployment. <br>
+IMAGE_NAME and IMAGE_NAME describe the docker image to deploy, while DOMAIN is necessary for the ingress. Leave it blank if you wont't configure an ingress, however, if there is no ingress you should leave the NodePort service with an external port to access the application.
+```
+# K8S env vars
+...
+IMAGE_NAME=laguzs/gnosis_main_service
+IMAGE_TAG=<image-tag>
+DOMAIN=<domain>
+...
+```
+Lastly these are some resource limits for the cluster and the number of replicas for the application.
+```
+...
+K8S_MAX_REPLICAS=<number-replicas>
+K8S_MIN_REPLICAS=<number-replicas>
+K8S_NAMESPACE=<deployment-namespace>
+K8S_RESOURCES_LIMITS_CPU=<cpu-limits>
+K8S_RESOURCES_LIMITS_MEMORY=<memory-limits>
+K8S_RESOURCES_REQUESTS_CPU=<cpu-request-limits>
+K8S_RESOURCES_REQUESTS_MEMORY=<memory-resources-limits>
+K8S_SERVICE_NAME=<service-name>
+```
+ to do that just type the following commands
+```sh
+set -o allexport
+source .env
+set +o allexport
+```
+This will keep the env viariables on the terminal session. now we need to print them on the k8s yaml file.
+```sh
+envsubst < deployment/k8s.yaml > deployment/k8s_patched.yaml
+```
+This will create a new file with the defined env variables in it. and now you can use this generated file on your cluster.
 
 ## :wrench: Detailed Description
