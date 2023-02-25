@@ -36,7 +36,64 @@ The nodejs dependencies can be installed simply by using ```npm ci```.
 
 ## :wrench: Set Up (Linux)
 
+To run this service you just need to have nodejs installes. recomended version is 16.<br>
+IMO the best way to install node is through [nvm](https://github.com/nvm-sh/nvm), and after installing nvm just run 
+```sh
+nvm install 16
+```
+to install node 16 and then to select it
+```sh
+nvm use 16
+```
+
+With nodejs installed you just need to install the dependencies
+
+```sh
+npm install
+```
+
 ## :white_check_mark: Run API Service 
+
+Before deploying the service you have to set up the environment variables. create a file called .env and copy the content from .base.env
+```sh
+cp .base.env .env
+```
+
+Let's explain the parameters to set on the .env file. <br>
+Set up the DB connection string. provide the connection parameters be it that you have a local DB, or a remote DB or that you ran [gnosis_database_service](https://github.com/damsog/gnosis-database-service). for the dbname you can set up any name.
+```sh
+DATABASE_URL="mysql://<username>:<password>@<host>:<port>/<dbname>"
+```
+Most variables are pretty straight forward, Set up the port to access the server on the PORT env viariable, the logger level and the deploy env.<br>
+However, SERVER and PORT_SWAGGER serve only one purpose and it's that swagger will use this to make the requests from the UI, so you have to set these two variables to the values you will use to make requets. For example, if you run on localhost, SERVER could be just localhost or your localip and PORT_SWAGGER would be the same as PORT, on the other hand, if your want to access remotely you will have to set SERVER to your remote IP and PORT_SWAGGER to your remote port.<br>
+Lastly, set a key to use as refference for the JWT to TOKEN_KEY. can be whatever you want but it's recomended to be base54 encoded.
+```sh
+SERVER=<server-ip>
+PORT=<server-port>
+PORT_SWAGGER=<server-port-swagger>
+LOGGER_LEVEL=<info/debug>
+NODE_ENV=<development/production>
+TOKEN_KEY=<token-key>
+```
+Indicate the certificates in case you want to use https. if you want to use http instead, comment these two lines.
+```sh
+SSL_KEY=./certificates/<key.pem>
+SSL_CERT=./certificates/<cert.pem>
+```
+Set the parameters to reach the [gnosis_recognizer_service](https://github.com/damsog/gnosis-recognizer-service).
+```sh
+FACE_ANALYTICS_SERVER=<recognizer-service-host>
+FACE_ANALYTICS_PORT=<recognizer-service-host>
+```
+Set the parameters to access the sftp server, be it a local server, and online service or the [gnosis_sftp_service](https://github.com/damsog/gnosis-sftp-service).
+
+```sh
+SFTP_HOST=<sftp-host>
+SFTP_PORT=<sftp-port>
+SFTP_USER=<sftp-user>
+SFTP_PASSWORD=<sftp-password>
+```
+The next section on the .env file it's used to configure a k8s deployment. if you wonn't run on a cluster ignore this section. <br>
 
 ### :penguin: *Run from terminal*
 
